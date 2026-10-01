@@ -1,16 +1,17 @@
-```ejs
-<%- include('partials/header', {title}) %>
+<%- include('partials/header') %>
 
 <main>
-    <h1><%= title %></h1>
+    <h1>Service Project Categories</h1>
 
-    <ul>
-        <li>Environmental</li>
-        <li>Educational</li>
-        <li>Community Service</li>
-        <li>Health and Wellness</li>
-    </ul>
+    <% if (categories.length > 0) { %>
+        <ul>
+            <% categories.forEach(category => { %>
+                <li><%= category.name %></li>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <p>No categories found.</p>
+    <% } %>
 </main>
 
 <%- include('partials/footer') %>
-```
