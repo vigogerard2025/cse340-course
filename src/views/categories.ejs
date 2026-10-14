@@ -2,12 +2,19 @@
 <main>
     <h1><%= title %></h1>
 
-    <ul>
-        <% categories.forEach(category => { %>
-            <li>
-                <a href="/category/<%= category.category_id %>"><%= category.name %></a>
-            </li>
-        <% }); %>
-    </ul>
+    <% if (categories.length > 0) { %>
+        <ul>
+            <% categories.forEach(category => { %>
+                <li>
+                    <%= category.name %>
+                    (<a href="/edit-category/<%= category.category_id %>">Edit</a>)
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>No categories found.</p>
+    <% } %>
+
+    <p><a href="/new-category">Add a new category</a></p>
 </main>
 <%- include('partials/footer') %>

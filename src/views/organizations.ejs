@@ -2,12 +2,14 @@
 <main>
     <h1><%= title %></h1>
 
-    <ul>
-        <% organizations.forEach(organization => { %>
-            <li>
-                <a href="/organization/<%= organization.organization_id %>"><%= organization.name %></a>
-            </li>
-        <% }); %>
-    </ul>
+    <% organizations.forEach(organization => { %>
+        <section>
+            <img src="/images/<%= organization.logo_filename %>" alt="<%= organization.name %> logo" width="100">
+            <h2><a href="/organization/<%= organization.organization_id %>"><%= organization.name %></a></h2>
+            <p><%= organization.description %></p>
+        </section>
+    <% }); %>
+
+    <p><a href="/new-organization">Add a new organization</a></p>
 </main>
 <%- include('partials/footer') %>

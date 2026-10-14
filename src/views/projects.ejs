@@ -2,13 +2,15 @@
 <main>
     <h1><%= title %></h1>
 
-    <ul>
-        <% projects.forEach(project => { %>
-            <li>
-                <a href="/project/<%= project.project_id %>"><%= project.title %></a>
-                (<a href="/organization/<%= project.organization_id %>"><%= project.organization_name %></a>)
-            </li>
-        <% }); %>
-    </ul>
+    <% projects.forEach(project => { %>
+        <section>
+            <h2><a href="/project/<%= project.project_id %>"><%= project.title %></a></h2>
+            <p><%= project.description %></p>
+            <p>Organization: <%= project.organization_name %></p>
+            <p>Location: <%= project.location %> | Date: <%= project.date %></p>
+        </section>
+    <% }); %>
+
+    <p><a href="/new-project">Add a new service project</a></p>
 </main>
 <%- include('partials/footer') %>
