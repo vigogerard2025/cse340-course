@@ -1,6 +1,9 @@
 -- ========================================
 -- Reset (permite recrear la base de datos)
+-- Orden: primero las tablas que dependen de otras
 -- ========================================
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS project_category;
 DROP TABLE IF EXISTS category;
 DROP TABLE IF EXISTS service_project;
@@ -40,7 +43,6 @@ VALUES
 
 -- ========================================
 -- Service Projects
--- (5 projects per organization)
 -- ========================================
 CREATE TABLE service_project (
     project_id SERIAL PRIMARY KEY,
@@ -57,25 +59,21 @@ CREATE TABLE service_project (
 
 INSERT INTO service_project (organization_id, title, description, location, date)
 VALUES
--- BrightFuture Builders (1)
-(1, 'Community Playground Build', 'Volunteers build a safe playground for neighborhood children.', 'Rexburg, ID', '2026-10-10'),
-(1, 'Bridge Repair Day', 'Repair and repaint a pedestrian bridge in the city park.', 'Idaho Falls, ID', '2026-10-24'),
--- GreenHarvest Growers (2)
-(2, 'Urban Garden Planting', 'Plant vegetables in a shared community garden.', 'Rexburg, ID', '2026-10-17'),
-(2, 'Composting Workshop', 'Teach families how to start composting at home.', 'Ammon, ID', '2026-11-07'),
--- UnityServe Volunteers (3)
-(3, 'Food Bank Sorting', 'Sort and pack donated food for local families.', 'Idaho Falls, ID', '2026-10-31'),
-(3, 'Neighborhood Health Fair', 'Free health screenings and information booths.', 'Rexburg, ID', '2026-11-14'),
--- Additional projects (ids 7 to 15)
-(1, 'Community Center Repair', 'Volunteers repair and repaint the local community center.', 'Rexburg, ID', '2026-11-21'),
-(1, 'Home Weatherization Day', 'Seal windows and doors for low-income households.', 'Ammon, ID', '2026-12-05'),
-(1, 'Park Pavilion Construction', 'Build a covered pavilion for community gatherings.', 'Idaho Falls, ID', '2026-12-12'),
-(2, 'Urban Tree Planting', 'Plant trees along streets with little shade.', 'Idaho Falls, ID', '2026-11-21'),
-(2, 'Seed Swap and Gardening Class', 'Teach residents how to start vegetable gardens from seed.', 'Rexburg, ID', '2026-12-05'),
-(2, 'Harvest Donation Day', 'Harvest and donate fresh produce to local families.', 'Ammon, ID', '2026-12-12'),
-(3, 'Tutoring Program', 'Free after-school tutoring for elementary students.', 'Rexburg, ID', '2026-11-28'),
-(3, 'Winter Coat Drive', 'Collect and distribute coats for families in need.', 'Idaho Falls, ID', '2026-12-05'),
-(3, 'Community Cleanup Day', 'Volunteers clean streets and parks.', 'Ammon, ID', '2026-12-12');
+(1, 'Community Playground Build', 'Volunteers build a safe playground for neighborhood children.', 'Rexburg, ID', '2026-11-07'),
+(1, 'Bridge Repair Day', 'Repair and repaint a pedestrian bridge in the city park.', 'Idaho Falls, ID', '2026-11-14'),
+(1, 'Park Bench Installation', 'Install new benches along the riverside walking path.', 'Rigby, ID', '2026-11-21'),
+(1, 'Community Center Renovation', 'Paint and repair rooms at the community center.', 'Ammon, ID', '2026-12-05'),
+(1, 'Affordable Housing Cleanup', 'Clean and prepare lots for new affordable housing.', 'Rexburg, ID', '2026-12-12'),
+(2, 'Urban Garden Planting', 'Plant vegetables in a shared community garden.', 'Rexburg, ID', '2026-11-08'),
+(2, 'Composting Workshop', 'Teach families how to start composting at home.', 'Ammon, ID', '2026-11-15'),
+(2, 'School Garden Project', 'Build raised garden beds with students.', 'Sugar City, ID', '2026-11-22'),
+(2, 'Food Sustainability Workshop', 'Learn to preserve and store seasonal produce.', 'Idaho Falls, ID', '2026-12-06'),
+(2, 'Harvest and Food Donation', 'Harvest vegetables and donate them to local families.', 'Rigby, ID', '2026-12-13'),
+(3, 'Food Bank Sorting', 'Sort and pack donated food for local families.', 'Idaho Falls, ID', '2026-11-09'),
+(3, 'Neighborhood Health Fair', 'Free health screenings and information booths.', 'Rexburg, ID', '2026-11-16'),
+(3, 'Clothing Donation Drive', 'Collect and sort winter clothing for families in need.', 'Ammon, ID', '2026-11-23'),
+(3, 'Senior Support Day', 'Help seniors with yard work and small household tasks.', 'Rigby, ID', '2026-12-07'),
+(3, 'Holiday Community Outreach', 'Deliver holiday meal baskets to neighbors.', 'Rexburg, ID', '2026-12-14');
 
 -- ========================================
 -- Categories
@@ -85,7 +83,7 @@ CREATE TABLE category (
     name VARCHAR(100) NOT NULL UNIQUE
 );
 
--- Tabla intermedia (muchos a muchos): proyecto <-> categoria
+-- Tabla intermedia (muchos a muchos): proyecto <-> categoría
 CREATE TABLE project_category (
     project_id INTEGER NOT NULL,
     category_id INTEGER NOT NULL,
@@ -102,31 +100,45 @@ INSERT INTO category (name) VALUES
     ('Community Health'),
     ('Food & Hunger Relief');
 
--- Categorias: 1 = Environmental, 2 = Education, 3 = Community Health, 4 = Food & Hunger Relief
+-- Categorías: 1 = Environmental, 2 = Education, 3 = Community Health, 4 = Food & Hunger Relief
 INSERT INTO project_category (project_id, category_id) VALUES
     (1, 2),
     (2, 1),
     (3, 1),
-    (3, 4),
-    (4, 1),
-    (4, 2),
-    (5, 4),
-    (6, 3),
-    (7, 3),
-    (8, 1),
-    (9, 3),
-    (10, 1),
-    (11, 2),
-    (12, 4),
-    (13, 2),
-    (14, 4),
-    (15, 1);
+    (4, 2), (4, 1),
+    (5, 1),
+    (6, 1),
+    (7, 1), (7, 2),
+    (8, 2),
+    (9, 4), (9, 2),
+    (10, 4),
+    (11, 4),
+    (12, 3),
+    (13, 4),
+    (14, 3),
+    (15, 3);
 
 -- ========================================
--- Verificacion: debe mostrar 5 por organizacion
+-- Roles
 -- ========================================
-SELECT o.organization_id, o.name, COUNT(sp.project_id) AS total_projects
-FROM organization o
-LEFT JOIN service_project sp ON sp.organization_id = o.organization_id
-GROUP BY o.organization_id, o.name
-ORDER BY o.organization_id;
+CREATE TABLE roles (
+    role_id SERIAL PRIMARY KEY,
+    role_name VARCHAR(50) UNIQUE NOT NULL,
+    role_description TEXT
+);
+
+INSERT INTO roles (role_name, role_description) VALUES
+    ('user', 'Standard user with basic access'),
+    ('admin', 'Administrator with full system access');
+
+-- ========================================
+-- Users
+-- ========================================
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role_id INTEGER REFERENCES roles(role_id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
