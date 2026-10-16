@@ -7,7 +7,7 @@ import {
 } from "../models/projects.js";
 import { getAllOrganizations } from "../models/organizations.js";
 import { getCategoriesByServiceProjectId } from "../models/categories.js";
-
+import { isUserVolunteer } from "../models/volunteers.js";
 // Validation and sanitization rules for project forms
 const projectValidation = [
   body("title")
@@ -58,9 +58,12 @@ const showProjectDetailsPage = async (req, res, next) => {
   }
 
   const categories = await getCategoriesByServiceProjectId(projectId);
+  const isVolunteer = req.session.user
+    ? await isUserVolunteer(req.session.user.user_id, projectId)
+    : false;
   const title = "Project Details";
 
-  res.render("project", { title, project, categories });
+  res.render("project", { title, project, categories, isVolunteer });
 };
 
 const showNewProjectForm = async (req, res) => {

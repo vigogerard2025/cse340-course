@@ -2,6 +2,7 @@
 -- Reset (permite recrear la base de datos)
 -- Orden: primero las tablas que dependen de otras
 -- ========================================
+DROP TABLE IF EXISTS volunteer;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS project_category;
@@ -141,4 +142,18 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     role_id INTEGER REFERENCES roles(role_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ========================================
+-- Volunteers (muchos a muchos): usuario <-> proyecto
+-- ========================================
+CREATE TABLE volunteer (
+    user_id INTEGER NOT NULL,
+    project_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, project_id),
+    CONSTRAINT fk_volunteer_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_volunteer_project
+        FOREIGN KEY (project_id) REFERENCES service_project(project_id) ON DELETE CASCADE
 );

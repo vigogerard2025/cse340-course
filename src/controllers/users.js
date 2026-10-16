@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { body, validationResult } from "express-validator";
 import { createUser, authenticateUser, getAllUsers } from "../models/users.js";
-
+import { getVolunteerProjectsByUserId } from "../models/volunteers.js";
 const saltRounds = 10;
 
 // Validation rules for the registration form
@@ -123,11 +123,12 @@ const requireRole = (role) => {
   };
 };
 
-const showDashboard = (req, res) => {
-  const { name, email } = req.session.user;
+const showDashboard = async (req, res) => {
+  const { user_id: userId, name, email } = req.session.user;
+  const volunteerProjects = await getVolunteerProjectsByUserId(userId);
   const title = "Dashboard";
 
-  res.render("dashboard", { title, name, email });
+  res.render("dashboard", { title, name, email, volunteerProjects });
 };
 
 const showUsersPage = async (req, res) => {

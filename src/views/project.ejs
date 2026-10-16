@@ -18,6 +18,21 @@
         <p>No categories assigned.</p>
     <% } %>
 
+    <% if (isLoggedIn) { %>
+        <h2>Volunteer</h2>
+        <% if (isVolunteer) { %>
+            <p>You are volunteering for this project.</p>
+            <form action="/project/<%= project.project_id %>/unvolunteer" method="POST">
+                <input type="hidden" name="returnTo" value="project">
+                <button type="submit" class="link-button">Remove me as a volunteer</button>
+            </form>
+        <% } else { %>
+            <form action="/project/<%= project.project_id %>/volunteer" method="POST">
+                <button type="submit" class="link-button">Volunteer for this project</button>
+            </form>
+        <% } %>
+    <% } %>
+
     <% if (user && user.role_name === 'admin') { %>
         <p>
             <a href="/edit-project/<%= project.project_id %>">Edit Project</a> |

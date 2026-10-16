@@ -41,6 +41,10 @@ import {
   showDashboard,
   showUsersPage,
 } from "./controllers/users.js";
+import {
+  processVolunteerSignup,
+  processVolunteerRemoval,
+} from "./controllers/volunteers.js";
 import { testErrorPage } from "./controllers/errors.js";
 
 const router = express.Router();
@@ -86,6 +90,10 @@ router.post(
   projectValidation,
   processEditProjectForm,
 );
+
+// Volunteer routes (any logged-in user)
+router.post("/project/:id/volunteer", requireLogin, processVolunteerSignup);
+router.post("/project/:id/unvolunteer", requireLogin, processVolunteerRemoval);
 
 // Category routes
 router.get("/categories", showCategoriesPage);
